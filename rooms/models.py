@@ -1,7 +1,8 @@
 from django.db import models
+from common.models import CommonModel
 
 
-class Room(models.Model):
+class Room(CommonModel):
 
     """Room Model Definition"""
 
@@ -10,6 +11,10 @@ class Room(models.Model):
         PRIVATE_ROOM = ("private_room", "Private Room")
         SHARED_ROOM = "shared_room", "Shared Room"
 
+    name = models.CharField(
+        max_length=180,
+        default="",
+    )
     country = models.CharField(
         max_length=50,
         default="한국",
@@ -40,8 +45,11 @@ class Room(models.Model):
         "rooms.Amenity",
     )
 
+    def __str__(self) -> str:
+        return self.name
 
-class Amenity(models.Model):
+
+class Amenity(CommonModel):
 
     """Amenity Definition"""
 
@@ -51,4 +59,11 @@ class Amenity(models.Model):
     description = models.CharField(
         max_length=150,
         null=True,
+        blank=True,
     )
+
+    def __str__(self) -> str:
+        return self.name
+
+    class Meta:
+        verbose_name_plural = "Amenities"
