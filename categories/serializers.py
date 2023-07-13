@@ -1,6 +1,8 @@
 from rest_framework import serializers
+from .models import Category
 
 
 class CategorySerializer(serializers.Serializer):
-    name = serializers.CharField(required=True)
-    kind = serializers.CharField()
+    class Meta:
+        model = Category
+        fields = "__all__"
