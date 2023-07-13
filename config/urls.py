@@ -23,4 +23,5 @@ urlpatterns = [
     #     "rooms", views.say_hello
     # ),  # rooms url로 가면, rooms 앱의 views 파일 안에 있는 say_hello 함수를 실행시킨다.
     path("rooms/", include("rooms.urls")),
+    path("categories/", include("categories.urls")),
 ]
