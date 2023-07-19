@@ -48,6 +48,12 @@ class Room(CommonModel):
     def __str__(self) -> str:
         return self.name
 
+    def total_amenities(
+        self,
+    ):  # admin이나 여기서 선언해주면 total_amenities라는 컬럼이 생기는데, 이 컬럼은 DB에 저장되지 않는다.(?)
+        print(self.amenities.all())
+        return self.amenities.all().count()
+
 
 class Amenity(CommonModel):
 

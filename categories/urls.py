@@ -6,7 +6,7 @@ urlpatterns = [
         "",
         views.CategoryViewSet.as_view(
             {
-                "get": "list",
+                "get": "list",  # http 메서드를 class 메서드와 이어준다.
                 "post": "create",
             }
         ),
