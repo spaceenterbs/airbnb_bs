@@ -20,7 +20,10 @@ class Category(CommonModel):
     )
 
     def __str__(self) -> str:
-        return self.name
+        return f"{self.kind.title() }: {self.name}"
+
+    class Meta:
+        verbose_name_plural = "Categories"
 
 
 # from django.db import models
