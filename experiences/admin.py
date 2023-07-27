@@ -12,7 +12,7 @@ class ExperienceAdmin(admin.ModelAdmin):
         "created_at",
     )
 
-    list_filter = "category,"
+    # list_filter = "category,"
 
 
 @admin.register(Perk)
