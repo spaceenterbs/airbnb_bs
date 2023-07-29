@@ -20,7 +20,7 @@ class Category(CommonModel):
     )
 
     def __str__(self) -> str:
-        return f"{self.kind.title() }: {self.name}"
+        return f"{self.kind.title() }: {self.name}"  # title()은 첫글자만 대문자로 바꿔준다.
 
     class Meta:
         verbose_name_plural = "Categories"

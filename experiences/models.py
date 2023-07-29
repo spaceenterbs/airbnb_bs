@@ -6,7 +6,7 @@ class Experience(CommonModel):
 
     """Experience Model Definition"""
 
-    country = models.CharField(
+    country = models.CharField(  # country와 city가 중복되니 다른 모델에서 가져옴
         max_length=50,
         default="한국",
     )
@@ -25,11 +25,11 @@ class Experience(CommonModel):
     address = models.CharField(
         max_length=250,
     )
-    start = models.TimeField()
+    start = models.TimeField()  # 시간, 분, 초
     end = models.TimeField()
     description = models.TextField()
-    perks = models.ManyToManyField(
-        "experiences.Perk",
+    perks = models.ManyToManyField(  # 특전, what is included. experience는 여러개의 perk를 가질 수 있고, perk는 여러개의 experience를 가질 수 있다.
+        "experiences.Perk",  # Perk 모델을 참조
     )
     category = models.ForeignKey(
         "categories.Category",
@@ -52,7 +52,7 @@ class Perk(CommonModel):
     details = models.CharField(
         max_length=250,
         blank=True,
-        default="",
+        default="",  # null=True로 하면 빈칸이 들어가는데, 이건 빈칸이 아니라 빈 문자열이 들어가야 하기 때문에 default를 설정해준다. 둘을 같이 설정하면 빈칸이 들어가는 것을 허용한다는 뜻이 된다. 비슷하다.
     )
     explanation = models.TextField(
         blank=True,

@@ -14,4 +14,6 @@ class CommonModel(models.Model):
     )
 
     class Meta:
-        abstract = True
+        abstract = (
+            True  # abstract model은 DB에 나타나지 않는다. # abstract model은 admin에 나타나지 않는다.
+        )
