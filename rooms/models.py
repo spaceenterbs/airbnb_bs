@@ -40,15 +40,18 @@ class Room(CommonModel):
     owner = models.ForeignKey(  # room은 하나의 user를 가질 수 있고, user는 여러개의 room을 가질 수 있다.
         "users.User",
         on_delete=models.CASCADE,
+        related_name="rooms",
     )
     amenities = models.ManyToManyField(  # room은 여러개의 amenity를 가질 수 있고, amenity는 여러개의 room을 가질 수 있다.
         "rooms.Amenity",
+        related_name="rooms",
     )
     category = models.ForeignKey(
         "categories.Category",
         null=True,
         blank=True,
         on_delete=models.SET_NULL,
+        related_name="rooms",
     )
 
     def __str__(room) -> str:
