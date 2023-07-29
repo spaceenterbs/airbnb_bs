@@ -51,14 +51,16 @@ class Room(CommonModel):
         on_delete=models.SET_NULL,
     )
 
-    def __str__(self) -> str:
-        return self.name
+    def __str__(room) -> str:
+        return room.name
 
     def total_amenities(
-        self,
+        room,
     ):  # admin이나 여기서 선언해주면 total_amenities라는 컬럼이 생기는데, 이 컬럼은 DB에 저장되지 않는다.(?)
-        print(self.amenities.all())
-        return self.amenities.all().count()
+        # print(self.amenities.all())  # 결과를 집접 보고 싶으면, 이렇게 출력하면 된다. 터미널에서 뜬다.
+        return room.amenities.count()
+        # return room.amenities.all().count()
+        # 대신 return self.amenities.filter().exclude().count() 해도 되긴 한다. 되긴...
 
 
 class Amenity(CommonModel):
