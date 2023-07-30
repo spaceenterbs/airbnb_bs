@@ -26,6 +26,7 @@ class House(models.Model):
         "users.User",
         on_delete=models.CASCADE,  # SET_NULL로 하면 user가 삭제되어도 house는 남아있게 된다. 이는 쇼핑몰에서 사용자가 탈퇴해도 주문내역은 남아있는 것과 같다.
         # relationship을 변경했으니 migration을 해줘야 한다.
+        related_name="houses",  # user.houses.all()을 통해 user가 만든 house들을 볼 수 있다.
     )  # Django한테 방의 가격처럼 단순한 숫자가 아닌 데이터를 houses 테이블에 저장한다고 알려준다. # 다른 앱에 있는 테이블의 object의 ID라는 걸 알려준다.
 
     def __str__(self):

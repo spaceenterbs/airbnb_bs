@@ -62,8 +62,28 @@ class Room(CommonModel):
     ):  # admin이나 여기서 선언해주면 total_amenities라는 컬럼이 생기는데, 이 컬럼은 DB에 저장되지 않는다.(?)
         # print(self.amenities.all())  # 결과를 집접 보고 싶으면, 이렇게 출력하면 된다. 터미널에서 뜬다.
         return room.amenities.count()
-        # return room.amenities.all().count()
-        # 대신 return self.amenities.filter().exclude().count() 해도 되긴 한다. 되긴...
+
+    """관리자 페이지뿐만이 아닌 어딘가에서도 사용하고자 한다면, 모델 내부에. 그렇지 않다면 admin.py에."""
+    # return room.amenities.all().count()
+    # 대신 return self.amenities.filter().exclude().count() 해도 되긴 한다. 되긴...
+
+    def rating(room):
+        count = room.reviews.count()
+        if count == 0:
+            return "No Reviews"
+        else:
+            total_rating = 0
+            print(
+                room.reviews.all().values("rating")
+            )  # <QuerySet [{'rating': 5}, {'rating': 3}, {'rating': 5}]> 아래의 최적화 버전.
+            print(
+                room.reviews.all()
+            )  # <QuerySet [<Review: user / 5⭐>, <Review: user / 3⭐>, <Review: admin / 5⭐>]>
+            for review in room.reviews.all().values("rating"):
+                """values를 사용하면 QuerySet은 약간씩 바뀌어 더이상 review가 아니라 dict가 된다. 그래서 review.rating이 아니라 review["rating"]이 된다."""
+                # for review in room.reviews.all(): # 숫자가 많아지면 부담이 커지는데, 장고가 전체 리뷰를 가져오게 하는 대신에, 우리가 할 수 있는 것은 원하는 값만 구체적으로 선택하는 것이다. 그럼 장고는 모든 걸 가져오지 않아도 되고, 오직 우리가 원하는 값만 가져올 것이다.
+                total_rating += review["rating"]  # review.rating
+            return round(total_rating / count, 2)
 
 
 class Amenity(CommonModel):
