@@ -46,7 +46,9 @@ class RoomAdmin(admin.ModelAdmin):
     )
 
     search_fields = (
-        "^owner__username",  # ^는 username으로 시작하는 내용 찾음 # owner의 username으로 검색한다.
+        "name",
+        "^price",
+        "-owner__username",  # ^는 username으로 시작하는 내용 찾음 # owner의 username으로 검색한다.
         # "^name",  # name으로 시작하는 것을 검색한다.
         # "=price",  # price로 시작하는 것을 검색한다. ^를 빼주면 price가 포함된 것을 검색한다.
         # # = (exact)는 정확히 일치하는 것을 검색한다.
