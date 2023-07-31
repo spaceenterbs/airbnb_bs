@@ -1,0 +1,18 @@
+<h1>{{title}}</h1>
+{% comment %} 유저는 렌더링 된 결과물을 볼 것이다. 장고가 이 템플릿을 가져다가
+이 변수를 여기 우리가 적어준 값으로 바꿔준다.{% endcomment %}
+
+<ul>
+  {% for room in rooms %} {% comment %} 나는 /rooms/{{방의 id}} 로 가고 싶다고
+  말한 것 {% endcomment %} {% comment %} rooms는 context(see_all_rooms의
+  rooms)다. {% endcomment %}
+  <li>
+    <a href="/rooms/{{room.pk}}">
+      {{room.name}}<br />
+      {% for amenity in room.amenities.all %}
+      <span>-{{amenity.name}}<br /></span>
+      {% endfor %}</a
+    >
+  </li>
+  {% endfor %}
+</ul>

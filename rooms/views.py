@@ -7,6 +7,7 @@ models.py와 apps.py, admin.py는 바꾸면 안된다.
 """
 from django.shortcuts import render
 from django.http import HttpResponse
+from .models import Room
 
 
 # def say_hello(
@@ -22,10 +23,31 @@ from django.http import HttpResponse
 
 
 def see_all_rooms(request):
-    # rooms = Room.objects.all()
-    return HttpResponse("see all rooms")
+    rooms = Room.objects.all()  # rencer 1. DB에 있는 모든 방의 정보를 받아온다.
+    # return HttpResponse("see all rooms")
+    return render(
+        request,
+        "all_rooms.html",
+        {"rooms": rooms, "title": "Hello! this title comes from django!"},
+    )  # all_rooms라는 템플릿을 렌더링하며 rooms와 title을 넘겨준다. #유저에게 HTML을 렌더링 해준다.
 
 
-def see_one_room(request, room_id):
+def see_one_room(request, room_pk):
     # def see_one_room(request, room_id, room_name): # rooms urls.py에서 <str:room_name>을 받으면 room_name도 추가해 줘야 한다. # room_id를 받을 자리를 만들어준다.
-    return HttpResponse(f"see room with id: {room_id}")
+    try:
+        room = Room.objects.get(pk=room_pk)
+        return render(
+            request,
+            "room_detail.html",
+            {
+                "room": room,
+            },
+        )
+    except Room.DoesNotExist:  # 만약 try 안의 코드가 에러가 발생하면 except 안의 코드를 실행한다.
+        return render(
+            request,
+            "room_detail.html",
+            {
+                "not_found": True,
+            },
+        )  # HttpResponse(f"see room with id: {room_pk}")
