@@ -3,20 +3,60 @@ from rest_framework.response import Response
 from .models import Category
 from .serializers import CategorySerializer
 
+"""
+QuerySet to JSON
+And JSON to QuerySet. 장고는 양방향 번역기다.
+
+GET /categories
+GET /categories/1
+"""
+
+
+@api_view(["GET", "POST"])
+def categories(
+    request,
+):  # decorator로 decorated된 API view 함수가 DB에 있는 모든 카테고리르 가져와서 serializer에게 넘겨주고 있다.
+    # serializer는 장고 객체를 JSON으로 번역해준다.
+    if request.method == "GET":
+        all_categories = Category.objects.all()
+        serializer = CategorySerializer(
+            all_categories,  # CategorySerializer에게 모든 카테고리를 준다.
+            many=True,  # 하나가 아닌 많은 카테고리를 보낸다고 알려주는 것이다.
+        )
+        return Response(serializer.data)
+    elif request.method == "POST":
+        print(
+            request.data
+        )  # {'name': 'Category from DRF', 'kind': 'rooms'} 가 출력된다. # user가 보내고 있는 데이터가 data에 들어있다.
+        serializer = CategorySerializer(
+            data=request.data
+        )  # Django에서 JSON으로 번역하고 싶을 때는 CategorySerializer에 category를 넘기고
+        # 만약 user로부터 데이터를 가져오고 싶다면 data를 CategorySerializer에게 넘겨준다.
+        """CategorySerializer는 우리가 views에서 serializer에게 어떻게 생겼는지를 설명해줬기에 데이터 형태를 모두 알고 있다."""
+        print(serializer.is_valid())
+        print(
+            serializer.errors
+        )  # {'name': [ErrorDetail(string='This field is required.', code='required')]} 에러를 볼 수 있다.
+        # read_only=True를 pk와 created_at에 넣어주면 에러가 사라진다.
+        return Response({"created": True})
+
+        # Category.objects.create( # 이렇게 해주면 유저가 보내는 데이터를 검증하지 않는 것이다.
+        #     name = request.data("name"),
+        #     kind = request.data("kind")
+        # )
+
+    #     {
+    #         "ok": True,
+    #         "categories": serializer.data,  # Category.objects.all(),
+    #     }
+    # )
+
 
 @api_view()
-def categories(request):
-    all_categories = Category.objects.all()
-    serializer = CategorySerializer(
-        all_categories,  # CategorySerializer에게 모든 카테고리를 준다.
-        many=True,  # 하나가 아닌 많은 카테고리를 보낸다고 알려주는 것이다.
-    )
-    return Response(
-        {
-            "ok": True,
-            "categories": serializer.data,  # Category.objects.all(),
-        }
-    )
+def category(request, pk):  # url로부터 호출된 모든 view들은 request 객체를 받는다.
+    category = Category.objects.get(pk=pk)
+    serializer = CategorySerializer(category)
+    return Response(serializer.data)
 
 
 # from django.http import JsonResponse
