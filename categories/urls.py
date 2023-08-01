@@ -24,10 +24,32 @@ from . import views
 # ]
 
 urlpatterns = [
+    path(
+        "",
+        views.CategoryViewSet.as_view(
+            {
+                "get": "list",
+                "post": "create",
+            }
+        ),
+    ),
+    path(
+        "<int:pk>",  # ViewSet은 pk가 필수임.
+        views.CategoryViewSet.as_view(
+            {
+                "get": "retrieve",
+                "put": "partial_update",
+                "delete": "destroy",
+            }
+        ),
+    ),
+]
+
+"""
     path("", views.Categories.as_view()),  # 코드 지우면서 as_view() 추가함.
     # as_view()를 붙여주면, 요청이 GET인지 POST인지 알아서 실행한다.
     path("<int:pk>", views.CategoryDetail.as_view()),
-]
+"""
 
 # urlpatterns = [
 #     path(

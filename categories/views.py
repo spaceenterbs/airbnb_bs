@@ -8,6 +8,12 @@ from .models import Category
 from .serializers import CategorySerializer
 
 
+class CategoryViewSet(ModelViewSet):
+    serializer_class = CategorySerializer  # viewset은 serializer가 뭔지 알아야 한다.
+    queryset = Category.objects.all()  # viewset의 object가 무엇인지 알아야 한다.
+
+
+"""
 class Categories(APIView):
     def get(self, request):
         all_categories = Category.objects.all()
@@ -55,7 +61,7 @@ class CategoryDetail(APIView):
     def delete(self, request, pk):
         self.get_object(pk).delete()
         return Response(status=HTTP_204_NO_CONTENT)
-
+"""
 
 ##################################################
 
