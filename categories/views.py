@@ -8,7 +8,9 @@ from .models import Category
 from .serializers import CategorySerializer
 
 
-class CategoryViewSet(ModelViewSet):
+class CategoryViewSet(
+    ModelViewSet
+):  # ViewSet은 HTML form도 만들어 준다. 데이터 모양을 맞춰서 넣어줄 필요가 없어진다.
     serializer_class = CategorySerializer  # viewset은 serializer가 뭔지 알아야 한다.
     queryset = Category.objects.all()  # viewset의 object가 무엇인지 알아야 한다.
 
