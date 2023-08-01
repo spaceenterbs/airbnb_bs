@@ -1,6 +1,5 @@
 from rest_framework import serializers
-
-# from .models import Category
+from .models import Category
 
 # serializer은 번역기일 뿐이다. Django 코드를 API가 필요로 하는 JSON 코드로 바꿔주는 것이다.
 # 예를 들어, 카테고리를 포함해 DB에 있는 객체들은 PK가 있다. 그래서 아래와 같이 pk를 넣어주면, serializer는 이를 JSON으로 바꿔준다.
@@ -16,12 +15,29 @@ class CategorySerializer(
         required=True,
         max_length=50,  # serializer에게 우리 데이터의 형태를 설명하고 있다.
     )
-    kind = serializers.CharField(
-        max_length=15,
+    kind = serializers.ChoiceField(
+        # max_length=15,
+        choices=Category.CategoryKindChoices.choices,
     )
     created_at = serializers.DateTimeField(
         read_only=True
     )  # 이렇게 해주면 값이 또 들어간다. 그러나, 반복되는 코드가 많아서 노마드에서 이를 나중에 해결해준다.
+
+    def create(self, validated_data):
+        # print(validated_data)
+        return Category.objects.create(
+            **validated_data
+        )  # 이를 통해 공식적으로 DB에 카테고리를 만들 수 있다. serializer의 description에 따라 검증도 된 것을 알 수 있다.
+
+        """
+        {'name': 'Category from DRF', 'kind': 'rooms'}
+
+        name = 'Category from DRF',
+        kind = 'rooms'
+        위의 딕셔너리를 아래와 같이 바꿔준다.
+
+        create는 객체를 반환해야 한다.
+        """
 
     # class Meta:
     #     model = Category

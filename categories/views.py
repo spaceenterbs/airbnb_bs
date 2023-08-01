@@ -1,5 +1,7 @@
 from rest_framework.decorators import api_view
+from rest_framework.exceptions import NotFound
 from rest_framework.response import Response
+from rest_framework.status import HTTP_204_NO_CONTENT
 from .models import Category
 from .serializers import CategorySerializer
 
@@ -7,8 +9,15 @@ from .serializers import CategorySerializer
 QuerySet to JSON
 And JSON to QuerySet. 장고는 양방향 번역기다.
 
-GET /categories
-GET /categories/1
+GET POST /categories
+GET PUT DELETE /categories/1
+"""
+
+"""
+{
+"name": "Category from DRF",
+"kind": "rooms"
+}
 """
 
 
@@ -33,12 +42,21 @@ def categories(
         )  # Django에서 JSON으로 번역하고 싶을 때는 CategorySerializer에 category를 넘기고
         # 만약 user로부터 데이터를 가져오고 싶다면 data를 CategorySerializer에게 넘겨준다.
         """CategorySerializer는 우리가 views에서 serializer에게 어떻게 생겼는지를 설명해줬기에 데이터 형태를 모두 알고 있다."""
-        print(serializer.is_valid())
-        print(
-            serializer.errors
-        )  # {'name': [ErrorDetail(string='This field is required.', code='required')]} 에러를 볼 수 있다.
+        if serializer.is_valid():
+            new_category = (
+                serializer.save()
+            )  # serializer.save를 하는 것 만으로도 serializer는 serializer 안에 있던 검증된 데이터로 create 메서드를 호출한다.
+            return Response(
+                CategorySerializer(new_category).data,
+            )  # ({"created": True})
+        else:
+            return Response(serializer.errors)  # 계속해서 console을 열고 닫아주지 않아도 된다.
+        # print(serializer.is_valid())
+        # print(
+        #     serializer.errors
+        # )  # {'name': [ErrorDetail(string='This field is required.', code='required')]} 에러를 볼 수 있다.
         # read_only=True를 pk와 created_at에 넣어주면 에러가 사라진다.
-        return Response({"created": True})
+        # return Response({"created": True})
 
         # Category.objects.create( # 이렇게 해주면 유저가 보내는 데이터를 검증하지 않는 것이다.
         #     name = request.data("name"),
@@ -52,11 +70,33 @@ def categories(
     # )
 
 
-@api_view()
+@api_view(["GET", "PUT", "DELETE"])
 def category(request, pk):  # url로부터 호출된 모든 view들은 request 객체를 받는다.
-    category = Category.objects.get(pk=pk)
-    serializer = CategorySerializer(category)
-    return Response(serializer.data)
+    try:
+        category = Category.objects.get(pk=pk)
+    except Category.DoesNotExist:
+        raise NotFound
+
+    if request.method == "GET":
+        serializer = CategorySerializer(category)
+        return Response(serializer.data)
+    elif request.method == "PUT":
+        serializer = CategorySerializer(
+            category,
+            data=request.data,
+            partial=True,
+        )
+        if serializer.is_valid():
+            updated_category = serializer.save()
+            return Response(CategorySerializer(updated_category).data)
+        else:
+            return Response(serializer.errors)
+        # serializer = CategorySerializer(category)
+        # return Response(serializer.data)
+
+    elif request.method == "DELETE":
+        category.delete()
+        return Response(status=HTTP_204_NO_CONTENT)
 
 
 # from django.http import JsonResponse

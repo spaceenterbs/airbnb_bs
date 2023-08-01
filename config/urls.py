@@ -28,9 +28,9 @@ urlpatterns = [
     #     "rooms/", views.say_hello
     # ),  # views.say_hello argument는 유저가 이 url로 왔을 때 장고가 실행할 함수이다.
     path(
-        "rooms/", include("rooms.urls")
+        "api/v1/rooms/", include("rooms.urls")
     ),  # 누군가 rooms/(뒤에 뭐가 붙든) 에 접근한다면 rooms.urls 파일을 찾아보라는 말이다.
-    path("categories/", include("categories.urls")),
+    path("api/v1/categories/", include("categories.urls")),
 ]
 
 """
