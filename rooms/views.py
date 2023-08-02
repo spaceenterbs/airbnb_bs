@@ -1,5 +1,7 @@
 from rest_framework.views import APIView
+from rest_framework.status import HTTP_204_NO_CONTENT
 from rest_framework.response import Response
+from rest_framework.exceptions import NotFound
 from .models import Amenity
 from .serializers import AmenitySerializer
 
@@ -15,25 +17,56 @@ class Amenities(
         return Response(serializer.data)
 
     def post(self, request):
-        serializer = AmenitySerializer(data=request.data)
+        serializer = AmenitySerializer(
+            data=request.data
+        )  # 사용자의 데이터로 serializer를 만들 때는, serializer는 사용자의 데이터가 amenity object가 원하는 데이터에 준수하는지 검증해야 한다.
         if serializer.is_valid():
-            amenity = serializer.save()
+            amenity = (
+                serializer.save()
+            )  # serializer.save() 해서 ModelSerializer가 자동으로 amenity를 만들게 한다.
             return Response(
-                AmenitySerializer(amenity).data,
+                AmenitySerializer(amenity).data,  # 그러면 새로 만들어진 amenity를 return한다.
             )
         else:
             return Response(serializer.errors)
 
 
 class AmenityDetail(APIView):
-    def get(self, request, pk):
-        pass
+    def get_object(self, pk):
+        try:
+            return Amenity.objects.get(pk=pk)
+        except Amenity.DoesNotExist:
+            raise NotFound
+
+    def get(self, request, pk):  # amenities/<int:pk>로 우리가 URL에 요청했기에 pk가 필요하다.
+        amenity = self.get_object(pk)
+        serializer = AmenitySerializer(amenity)
+        return Response(serializer.data)
+        # return Response(
+        #     AmenitySerializer(
+        #         self.get_object(pk),
+        #     ).data,
+        # )
 
     def put(self, request, pk):
-        pass
+        amenity = self.get_object(pk)
+        serializer = AmenitySerializer(
+            amenity,  # 데이터베이스에 있는, 업데이트하고싶은 amenity
+            data=request.data,  # 사용자가 보낸 데이터. 따라서 위와 아래의 두 데이터로 serializer를 만든다.
+            partial=True,
+        )  # partial=True를 넣어주면, 모든 필드를 채울 필요가 없다. name이나 description만(둘 다는 X) 변경할 수 있게 한다.
+        if serializer.is_valid():
+            updated_amenity = serializer.save()
+            return Response(
+                AmenitySerializer(updated_amenity).data,
+            )
+        else:
+            return Response(serializer.errors)
 
     def delete(self, request, pk):
-        pass
+        amenity = self.get_object(pk)
+        amenity.delete()
+        return Response(status=HTTP_204_NO_CONTENT)
 
     # views는 유저가 특정 url에 접근했을 때 작동하게 되는 함수다.
     # 예를 들어 유저가 /rooms에 접근했을 때 안녕이라고 말하고 싶다면, '안녕'이라고 말해줄 함수가 바로 views.py 안에 작성될 것이다.
