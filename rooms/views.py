@@ -3,7 +3,7 @@ from rest_framework.status import HTTP_204_NO_CONTENT
 from rest_framework.response import Response
 from rest_framework.exceptions import NotFound
 from .models import Amenity
-from .serializers import AmenitySerializer
+from .serializers import AmenitySerializer  # 어떤 폴더에서 어떤 클래스를 가져온다.
 
 # /api/v1/rooms/amenities, /api/v1/rooms/amenities/1
 
@@ -12,7 +12,7 @@ class Amenities(
     APIView
 ):  # request method가 GET인지, POST인지 확인하는 조건문 코드를 쓰지 않아도 되기에 APIView를 쓴다.
     def get(self, request):
-        all_amenities = Amenity.objects.all()
+        all_amenities = Amenity.objects.all()  # 모든 amenity를 본다.
         serializer = AmenitySerializer(all_amenities, many=True)
         return Response(serializer.data)
 
@@ -21,7 +21,7 @@ class Amenities(
             data=request.data
         )  # 사용자의 데이터로 serializer를 만들 때는, serializer는 사용자의 데이터가 amenity object가 원하는 데이터에 준수하는지 검증해야 한다.
         if serializer.is_valid():
-            amenity = (
+            amenity = (  # serializer를 save하고 나면, serializer는 새로운 amenity를 만든다. 그리고 그 amenity를 return한다.
                 serializer.save()
             )  # serializer.save() 해서 ModelSerializer가 자동으로 amenity를 만들게 한다.
             return Response(
@@ -36,7 +36,7 @@ class AmenityDetail(APIView):
         try:
             return Amenity.objects.get(pk=pk)
         except Amenity.DoesNotExist:
-            raise NotFound
+            raise NotFound  # amenity를 찾아서 반환하거나 찾지 못할 경우 NotFound를 반환하는 method를 만든것.
 
     def get(self, request, pk):  # amenities/<int:pk>로 우리가 URL에 요청했기에 pk가 필요하다.
         amenity = self.get_object(pk)
