@@ -2,8 +2,12 @@ from rest_framework.views import APIView
 from rest_framework.status import HTTP_204_NO_CONTENT
 from rest_framework.response import Response
 from rest_framework.exceptions import NotFound
-from .models import Amenity
-from .serializers import AmenitySerializer  # 어떤 폴더에서 어떤 클래스를 가져온다.
+from .models import Amenity, Room
+from .serializers import (
+    AmenitySerializer,
+    RoomListSerializer,
+    RoomDetailSerializer,
+)  # 어떤 폴더에서 어떤 클래스를 가져온다.
 
 # /api/v1/rooms/amenities, /api/v1/rooms/amenities/1
 
@@ -51,8 +55,8 @@ class AmenityDetail(APIView):
     def put(self, request, pk):
         amenity = self.get_object(pk)
         serializer = AmenitySerializer(
-            amenity,  # 데이터베이스에 있는, 업데이트하고싶은 amenity
-            data=request.data,  # 사용자가 보낸 데이터. 따라서 위와 아래의 두 데이터로 serializer를 만든다.
+            amenity,  # put serializer는 entity를 업데이트할 때,  2가지 데이터를 가진다. 1. 데이터베이스에 있는, 업데이트하고싶은 amenity
+            data=request.data,  # 2. 사용자가 보낸 데이터. 따라서 위와 아래의 두 데이터로 serializer를 만든다.
             partial=True,
         )  # partial=True를 넣어주면, 모든 필드를 채울 필요가 없다. name이나 description만(둘 다는 X) 변경할 수 있게 한다.
         if serializer.is_valid():
@@ -74,6 +78,37 @@ class AmenityDetail(APIView):
     """config의 urls.py를 import 해서 사용하므로,
     views.py 파일의 이름은 꼭 view가 아니어도 된다. functions, controllers 등등으로 바꿔도 된다.
     models.py와 apps.py, admin.py는 바꾸면 안된다."""
+
+
+class Rooms(APIView):
+    def get(self, request):
+        all_rooms = Room.objects.all()
+        serializer = RoomListSerializer(all_rooms, many=True)
+        return Response(serializer.data)
+
+    def post(self, request):  # 무언가를 생성하기 위해서는 데이터는 serializer를 통해서 전달되어야 한다.
+        serializer = RoomDetailSerializer(data=request.data)
+        if serializer.is_valid():
+            room = serializer.save()
+            serializer = RoomDetailSerializer(room)
+            return Response(serializer.data)
+        else:
+            return Response(serializer.errors)
+
+
+class RoomDetail(APIView):
+    def get_object(self, pk):
+        try:
+            return Room.objects.get(pk=pk)
+        except Room.DoesNotExist:
+            raise NotFound
+
+    def get(
+        self, request, pk
+    ):  # 이 room을 다른 serializer; RoomDetailSerializer로 serialize 하고 싶다. RoomList 말고 더 큰 serializer로.
+        room = self.get_object(pk)
+        serializer = RoomDetailSerializer(room)
+        return Response(serializer.data)
 
 
 # from django.shortcuts import render

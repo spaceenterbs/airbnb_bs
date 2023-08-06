@@ -31,6 +31,7 @@ urlpatterns = [
         "api/v1/rooms/", include("rooms.urls")
     ),  # 누군가 rooms/(뒤에 뭐가 붙든) 에 접근한다면 rooms.urls 파일을 찾아보라는 말이다.
     path("api/v1/categories/", include("categories.urls")),
+    path("api/v1/experiences/", include("experiences.urls")),
 ]
 
 """

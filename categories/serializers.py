@@ -9,7 +9,10 @@ from .models import Category
 class CategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = Category
-        fields = "__all__"  # category model의 모든 field를 보여주겠다. created와 updated는 숨겨져있다.
+        fields = (
+            "name",
+            "kind",
+        )  # "__all__"  # category model의 모든 field를 보여주겠다. created와 updated는 숨겨져있다.
         # fields = ( # this or
         #     "name",
         #     "kind",
